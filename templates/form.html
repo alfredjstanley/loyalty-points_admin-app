@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline Payment Form</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f9fc;
+      }
+      .container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h1 {
+        text-align: center;
+        color: #333333;
+        margin-bottom: 20px;
+      }
+      label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 8px;
+        color: #555555;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      input:focus,
+      select:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+      button {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #777777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Olopo Point System</h1>
+      <form action="/submit" method="POST">
+        <label for="userPhone">User Phone:</label>
+        <input
+          type="text"
+          id="userPhone"
+          name="userPhone"
+          placeholder="Enter user's phone number"
+          required
+        />
+
+        <label for="merchantPhone">Merchant Phone:</label>
+        <input
+          type="text"
+          id="merchantPhone"
+          name="merchantPhone"
+          placeholder="Enter merchant's phone number"
+          required
+        />
+
+        <label for="amount">Amount:</label>
+        <input
+          type="number"
+          id="amount"
+          name="amount"
+          step="0.01"
+          placeholder="Enter payment amount"
+          required
+        />
+
+        <label for="invoiceId">Invoice ID:</label>
+        <input
+          type="text"
+          id="invoiceId"
+          name="invoiceId"
+          placeholder="Enter invoice ID"
+          required
+        />
+
+        <label for="paymentMode">Payment Mode:</label>
+        <select id="paymentMode" name="paymentMode" required>
+          <option value="CASH">Cash</option>
+          <option value="CARD">Card</option>
+          <option value="UPI">UPI</option>
+        </select>
+
+        <button type="submit">Submit</button>
+      </form>
+      <div class="footer">&copy; 2024 Offline Payment System</div>
+    </div>
+  </body>
+</html>
