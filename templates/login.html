@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <img src="/static/Olopo-logo.png" alt="Logo" class="logo" />
+      <h1>Login</h1>
+      <form id="loginForm">
+        <label for="mobileNumber">Mobile Number:</label>
+        <input
+          type="text"
+          id="mobileNumber"
+          name="mobileNumber"
+          placeholder="Enter your mobile number"
+          required
+        />
+
+        <label for="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        />
+
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader" style="display: none"></div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal" style="display: none">
+      <div class="modal-content">
+        <span class="close-btn" id="closeModal">&times;</span>
+        <p id="modalMessage"></p>
+      </div>
+    </div>
+
+    <script src="/static/login.js"></script>
+  </body>
+</html>

@@ -5,10 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"text/template"
+	"os"
+
+	"wac-offline-payment/internal/models"
+	"wac-offline-payment/internal/repository"
 )
 
 type AuthResponse struct {
@@ -20,11 +24,11 @@ type AuthResponse struct {
 }
 
 type PaymentRequest struct {
-	UserMobileNumber     string `json:"user_mobile_number"`
-	MerchantMobileNumber string `json:"merchant_mobile_number"`
-	Amount               int    `json:"amount"`
-	InvoiceID            string `json:"invoice_id"`
-	PaymentMode          string `json:"payment_mode"`
+	UserMobileNumber     string  `json:"user_mobile_number"`
+	MerchantMobileNumber string  `json:"merchant_mobile_number"`
+	Amount               float64 `json:"amount"`
+	InvoiceID            string  `json:"invoice_id"`
+	PaymentMode          string  `json:"payment_mode"`
 }
 
 type PaymentResponse struct {
@@ -33,7 +37,6 @@ type PaymentResponse struct {
 	Data    []any  `json:"data"`
 }
 
-// HandlePoints processes the `/api/points` request
 func HandlePoints(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -56,23 +59,48 @@ func HandlePoints(w http.ResponseWriter, r *http.Request) {
 
 	// Step 2: Make payment request
 	paymentRes, err := makePaymentRequest(paymentReq, authToken)
+	logStatus := "SUCCESS"
+	if err != nil {
+		logStatus = "FAILURE"
+	}
+
+	// Step 3: Save log to MongoDB
+	logEntry := models.Log{
+		UserPhone:     paymentReq.UserMobileNumber,
+		MerchantPhone: paymentReq.MerchantMobileNumber,
+		Amount:        paymentReq.Amount,
+		InvoiceID:     paymentReq.InvoiceID,
+		PaymentMode:   paymentReq.PaymentMode,
+		Status:        logStatus,
+		Response:      paymentRes,
+	}
+	if saveErr := repository.SaveLog(logEntry); saveErr != nil {
+		log.Printf("Failed to save log: %v", saveErr)
+	}
+
+	// Step 4: Respond to the user
 	if err != nil {
 		http.Error(w, "Payment processing failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Step 3: Respond to the user with the payment response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(paymentRes)
 }
 
 func authenticate() (string, error) {
-	// Authentication API details
-	authURL := "https://olopo-dev.webc.in/api/auth/login"
+	authURL := os.Getenv("AUTH_URL")
+	authUsername := os.Getenv("AUTH_USERNAME")
+	authPassword := os.Getenv("AUTH_PASSWORD")
+
+	if authURL == "" || authUsername == "" || authPassword == "" {
+		return "", errors.New("AUTH_URL, AUTH_USERNAME, or AUTH_PASSWORD is not set in the environment")
+	}
+
 	authPayload := map[string]string{
-		"username": "admin@olopo.com",
-		"password": "UJYHdVHeOU19S3i",
+		"username": authUsername,
+		"password": authPassword,
 	}
 
 	payloadBytes, _ := json.Marshal(authPayload)
@@ -82,21 +110,26 @@ func authenticate() (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Printf("Error during authentication: %v", err)
 		return "", err
 	}
 	defer resp.Body.Close()
+
+	// Capture the response body for debugging
+	body, _ := ioutil.ReadAll(resp.Body)
 
 	if resp.StatusCode != http.StatusOK {
 		return "", errors.New("failed to authenticate")
 	}
 
 	var authRes AuthResponse
-	body, _ := ioutil.ReadAll(resp.Body)
 	if err := json.Unmarshal(body, &authRes); err != nil {
+		log.Printf("Error unmarshalling auth response: %v", err)
 		return "", err
 	}
 
 	if !authRes.Success {
+		log.Printf("Auth API response indicates failure: %s", authRes.Message)
 		return "", errors.New(authRes.Message)
 	}
 
@@ -104,9 +137,13 @@ func authenticate() (string, error) {
 }
 
 func makePaymentRequest(paymentReq PaymentRequest, token string) (*PaymentResponse, error) {
-	paymentURL := "https://olopo-dev.webc.in/api/payments/offline/complete"
+	paymentURL := os.Getenv("PAYMENT_URL")
+	if paymentURL == "" {
+		return nil, errors.New("PAYMENT_URL is not set in the environment")
+	}
 
 	payloadBytes, _ := json.Marshal(paymentReq)
+
 	req, _ := http.NewRequest(http.MethodPost, paymentURL, bytes.NewBuffer(payloadBytes))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+token)
@@ -114,21 +151,25 @@ func makePaymentRequest(paymentReq PaymentRequest, token string) (*PaymentRespon
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Printf("Error making payment request: %v", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 
+	body, _ := ioutil.ReadAll(resp.Body)
+
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("payment request failed")
+		return nil, errors.New(fmt.Sprintf("payment request failed with status %d", resp.StatusCode))
 	}
 
 	var paymentRes PaymentResponse
-	body, _ := ioutil.ReadAll(resp.Body)
 	if err := json.Unmarshal(body, &paymentRes); err != nil {
+		log.Printf("Error unmarshalling payment response: %v", err)
 		return nil, err
 	}
 
 	if !paymentRes.Success {
+		log.Printf("Payment API response indicates failure: %s", paymentRes.Message)
 		return nil, errors.New(paymentRes.Message)
 	}
 

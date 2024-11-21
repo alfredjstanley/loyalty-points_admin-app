@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/static/admin.css" />
+  </head>
+  <body>
+    <div class="admin-dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="logo-section">
+          <!-- <img src="/static/logo.png" alt="Logo" class="logo" /> -->
+          <br />
+          <h1>Merchant Wizard</h1>
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="#" id="addUserTab" class="active">Configuration</a>
+            </li>
+            <li><a href="#" id="listUsersTab">Merchant List</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+          <img
+            src="/static/Olopo-logo.png"
+            alt="Logo"
+            class="logo"
+            width="80px"
+          />
+
+          <h2 id="sectionTitle" style="display: none">Add Merchant</h2>
+        </header>
+
+        <!-- Add User Section -->
+        <section id="addUserSection" class="section active">
+          <div class="card">
+            <h3>Merchant Setup</h3>
+            <form id="addUserForm">
+              <div class="form-group">
+                <label for="storeName">Store Name</label>
+                <input
+                  type="text"
+                  id="storeName"
+                  name="storeName"
+                  placeholder="Enter store name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  placeholder="Enter store location"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  placeholder="Enter phone number"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter password"
+                  required
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">
+                Configure Merchant
+              </button>
+            </form>
+          </div>
+        </section>
+
+        <!-- User List Section -->
+        <section id="listUsersSection" class="section">
+          <div class="card">
+            <h3>All Merchants</h3>
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th>Store Name</th>
+                  <th>Location</th>
+                  <th>Phone Number</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <!-- Users will be dynamically populated here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/static/admin.js"></script>
+  </body>
+</html>
