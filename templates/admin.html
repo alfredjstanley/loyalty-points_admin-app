@@ -92,7 +92,22 @@
         <!-- User List Section -->
         <section id="listUsersSection" class="section">
           <div class="card">
-            <h3>All Merchants</h3>
+            <!-- Header and Search Bar -->
+            <div class="header-bar">
+              <h3>All Merchants</h3>
+              <div class="search-bar">
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Name, location or number"
+                  class="form-control"
+                />
+                <button id="searchButton" class="btn btn-primary">
+                  Search
+                </button>
+              </div>
+            </div>
+
             <div id="totalMerchants" class="merchant-count"></div>
             <table class="user-table">
               <thead>
