@@ -75,13 +75,17 @@ let currentPage = 1; // Initialize page
 
 async function loadUsers(page = 1) {
   try {
-    const res = await fetch(`/api/admin/users?page=${page}&limit=20`);
+    const res = await fetch(`/api/admin/users?page=${page}&limit=10`);
     const data = await res.json();
 
     const tbody = document.getElementById("userTableBody");
     tbody.innerHTML = "";
 
-    const { users, total, limit, page: currentPage } = data;
+    const { users, total, limit } = data;
+
+    // Update total merchants count
+    const totalCountElement = document.getElementById("totalMerchants");
+    totalCountElement.textContent = `Total Merchants: ${total}`;
 
     // Render table rows with serial numbers
     users.forEach((user, index) => {
@@ -95,7 +99,7 @@ async function loadUsers(page = 1) {
     });
 
     // Update pagination UI
-    renderPagination(total, limit, currentPage);
+    renderPagination(total, limit, page);
   } catch (error) {
     alert("Failed to load users.");
   }
@@ -107,13 +111,28 @@ function renderPagination(total, limit, page) {
 
   const totalPages = Math.ceil(total / limit);
 
+  if (totalPages <= 1) return; // No pagination needed for a single page
+
+  // Add Previous button
+  const prevButton = document.createElement("button");
+  prevButton.textContent = "Previous";
+  prevButton.disabled = page === 1;
+  prevButton.addEventListener("click", () => loadUsers(page - 1));
+  pagination.appendChild(prevButton);
+
+  // Add page numbers
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
     btn.className = i === page ? "active" : "";
-    btn.addEventListener("click", () => {
-      loadUsers(i);
-    });
+    btn.addEventListener("click", () => loadUsers(i));
     pagination.appendChild(btn);
   }
+
+  // Add Next button
+  const nextButton = document.createElement("button");
+  nextButton.textContent = "Next";
+  nextButton.disabled = page === totalPages;
+  nextButton.addEventListener("click", () => loadUsers(page + 1));
+  pagination.appendChild(nextButton);
 }

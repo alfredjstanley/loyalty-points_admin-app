@@ -80,7 +80,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 	if limit < 1 {
-		limit = 20
+		limit = 10 // Default to 10 users per page
 	}
 
 	// Fetch users with pagination
@@ -93,7 +93,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 	// Prepare response
 	response := map[string]interface{}{
 		"users":      users,
-		"total":      total,
+		"total":      total, // Total merchants
 		"page":       page,
 		"limit":      limit,
 		"totalPages": (total + limit - 1) / limit, // Calculate total pages
