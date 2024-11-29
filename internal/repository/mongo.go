@@ -83,8 +83,9 @@ func GetUsersWithPagination(page, limit int) ([]models.User, int, error) {
 		return nil, 0, err
 	}
 
-	// Fetch paginated users
+	// Fetch paginated users in reverse order (newest first)
 	findOptions := options.Find()
+	findOptions.SetSort(bson.D{{Key: "_id", Value: -1}}) // Sort by `_id` in descending order
 	findOptions.SetSkip(int64(skip))
 	findOptions.SetLimit(int64(limit))
 
