@@ -19,6 +19,7 @@
               <a href="#" id="addUserTab" class="active">Configuration</a>
             </li>
             <li><a href="#" id="listUsersTab">Merchant List</a></li>
+            <li><a href="#" id="transactionLogsTab">Transaction Logs</a></li>
           </ul>
         </nav>
       </aside>
@@ -106,6 +107,28 @@
               <tbody id="userTableBody"></tbody>
             </table>
             <div id="pagination" class="pagination"></div>
+          </div>
+        </section>
+
+        <!-- Transaction Logs Section -->
+        <section id="transactionLogsSection" class="section">
+          <div class="card">
+            <h3>Transaction Logs</h3>
+            <table class="user-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>User Phone</th>
+                  <th>Merchant Phone</th>
+                  <th>Amount</th>
+                  <th>Invoice ID</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="logsTableBody"></tbody>
+            </table>
+            <div id="logsPagination" class="pagination"></div>
           </div>
         </section>
       </main>

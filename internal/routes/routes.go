@@ -17,6 +17,7 @@ func RegisterRoutes(templatesDir string) {
 	http.HandleFunc("/admin", handlers.RenderAdmin(templatesDir))
 	http.HandleFunc("/api/admin/onboard", handlers.HandleOnboardUser)
 	http.HandleFunc("/api/admin/edit-merchant", handlers.EditMerchant)
+	http.HandleFunc("/api/admin/transaction-logs", handlers.GetTransactionLogs)
 
 	http.HandleFunc("/form", handlers.RenderForm(templatesDir))
 	http.HandleFunc("/api/points", handlers.HandlePoints)

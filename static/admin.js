@@ -207,3 +207,78 @@ document
   .addEventListener("click", () => {
     document.getElementById("viewModal").style.display = "none";
   });
+
+// Handle sidebar navigation
+document.getElementById("transactionLogsTab").addEventListener("click", () => {
+  showSection("transactionLogsSection", "transactionLogsTab");
+  loadTransactionLogs(); // Load logs when section is clicked
+});
+
+// Load transaction logs
+async function loadTransactionLogs(page = 1) {
+  try {
+    const res = await fetch(
+      `/api/admin/transaction-logs?page=${page}&limit=10`
+    );
+    const data = await res.json(); // Parse the response as JSON
+
+    // Confirm the structure of `data.logs` (if `logs` is nested)
+    const logs = data.logs || [];
+
+    const tbody = document.getElementById("logsTableBody");
+    tbody.innerHTML = "";
+
+    logs.forEach((log, index) => {
+      const date = new Date(log.CreatedAt).toLocaleString(); // Format date
+      const row = `
+        <tr>
+          <td>${(page - 1) * 10 + index + 1}</td>
+          <td>${log.UserPhone}</td>
+          <td>${log.MerchantPhone}</td>
+          <td>${log.Amount}</td>
+          <td>${log.InvoiceID}</td>
+          <td>${log.Status}</td>
+          <td>${date}</td>
+        </tr>`;
+      tbody.innerHTML += row;
+    });
+
+    renderLogsPagination(data.total, data.limit, page);
+  } catch (error) {
+    alert("Failed to load transaction logs.");
+    console.error(error);
+  }
+}
+
+// Render pagination buttons
+function renderLogsPagination(total, limit, page) {
+  const pagination = document.getElementById("logsPagination");
+  pagination.innerHTML = ""; // Clear existing pagination
+
+  const totalPages = Math.ceil(total / limit);
+
+  if (totalPages <= 1) return; // No pagination needed for a single page
+
+  // Add Previous button
+  const prevButton = document.createElement("button");
+  prevButton.textContent = "Previous";
+  prevButton.disabled = page === 1; // Disable if on the first page
+  prevButton.addEventListener("click", () => loadTransactionLogs(page - 1));
+  pagination.appendChild(prevButton);
+
+  // Add numbered page buttons
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.textContent = i;
+    pageButton.className = i === page ? "active" : ""; // Highlight current page
+    pageButton.addEventListener("click", () => loadTransactionLogs(i));
+    pagination.appendChild(pageButton);
+  }
+
+  // Add Next button
+  const nextButton = document.createElement("button");
+  nextButton.textContent = "Next";
+  nextButton.disabled = page === totalPages; // Disable if on the last page
+  nextButton.addEventListener("click", () => loadTransactionLogs(page + 1));
+  pagination.appendChild(nextButton);
+}
