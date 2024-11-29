@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"wac-offline-payment/internal/models"
 	"wac-offline-payment/internal/repository"
 
@@ -72,12 +73,32 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users, err := repository.GetAllUsers()
+	// Get pagination parameters
+	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 20
+	}
+
+	// Fetch users with pagination
+	users, total, err := repository.GetUsersWithPagination(page, limit)
 	if err != nil {
 		http.Error(w, "Failed to fetch users", http.StatusInternalServerError)
 		return
 	}
 
+	// Prepare response
+	response := map[string]interface{}{
+		"users":      users,
+		"total":      total,
+		"page":       page,
+		"limit":      limit,
+		"totalPages": (total + limit - 1) / limit, // Calculate total pages
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(response)
 }

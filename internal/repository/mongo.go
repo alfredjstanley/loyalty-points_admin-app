@@ -72,3 +72,32 @@ func GetAllUsers() ([]models.User, error) {
 
 	return users, nil
 }
+
+func GetUsersWithPagination(page, limit int) ([]models.User, int, error) {
+	collection := client.Database("olopo-points").Collection("users")
+	skip := (page - 1) * limit
+
+	// Count total users
+	total, err := collection.CountDocuments(context.Background(), bson.M{})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Fetch paginated users
+	findOptions := options.Find()
+	findOptions.SetSkip(int64(skip))
+	findOptions.SetLimit(int64(limit))
+
+	cursor, err := collection.Find(context.Background(), bson.M{}, findOptions)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer cursor.Close(context.Background())
+
+	var users []models.User
+	if err := cursor.All(context.Background(), &users); err != nil {
+		return nil, 0, err
+	}
+
+	return users, int(total), nil
+}
