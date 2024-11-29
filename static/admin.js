@@ -62,6 +62,9 @@ async function loadUsers(page = 1) {
           <td>${user.location}</td>
           <td>${user.phone_number}</td>
           <td>
+            <button class="btn view-btn" data-id="${
+              user.phone_number
+            }">View</button>
             <button class="btn edit-btn" data-id="${user.id}">Edit</button>
           </td>
         </tr>`;
@@ -149,3 +152,58 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
     alert("Failed to update merchant.");
   }
 });
+
+document.addEventListener("click", async (e) => {
+  if (e.target.classList.contains("view-btn")) {
+    const mobileNumber = e.target.dataset.id; // Get the merchant ID
+    try {
+      // Fetch merchant details from the API
+      const res = await fetch(
+        `/api/admin/edit-merchant?mobileNumber=${mobileNumber}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const { success, data, message } = await res.json();
+
+      if (success) {
+        // Populate the modal with merchant details
+        const details = document.getElementById("merchantDetails");
+        details.innerHTML = `
+          <img src="${data.profile_picture}" alt="${
+          data.store_name
+        }" width="100" style="border-radius: 50%;" />
+          <p><strong>Name:</strong> ${data.first_name} ${data.last_name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Phone:</strong> ${data.mobile_number}</p>
+          <p><strong>Store:</strong> ${data.store_name}</p>
+          <p><strong>Account Type:</strong> ${data.account_type}</p>
+          <p><strong>Location:</strong> ${data.address}</p>
+          <p><strong>Working Hours:</strong> ${data.working_hours}</p>
+          <p><strong>Balance:</strong> ${data.point_balance} points</p>
+          <p><strong>Categories:</strong> ${data.product_categories.join(
+            ", "
+          )}</p>
+          <p><strong>Days Open:</strong> ${data.working_days.join(", ")}</p>
+        `;
+
+        // Open the modal
+        document.getElementById("viewModal").style.display = "block";
+      } else {
+        alert("Failed to fetch merchant details.");
+      }
+    } catch (error) {
+      console.error("Error fetching merchant details:", error);
+      alert("Something went wrong while fetching details.");
+    }
+  }
+});
+
+// Close the modal
+document
+  .querySelector("#viewModal .close-btn")
+  .addEventListener("click", () => {
+    document.getElementById("viewModal").style.display = "none";
+  });
