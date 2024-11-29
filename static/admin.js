@@ -282,3 +282,91 @@ function renderLogsPagination(total, limit, page) {
   nextButton.addEventListener("click", () => loadTransactionLogs(page + 1));
   pagination.appendChild(nextButton);
 }
+
+document.getElementById("searchButton").addEventListener("click", () => {
+  const query = document.getElementById("searchInput").value.trim();
+  if (query) {
+    searchMerchants(query);
+  } else {
+    // Reload all merchants if search query is empty
+    loadUsers();
+  }
+});
+
+async function searchMerchants(query) {
+  try {
+    const res = await fetch(
+      `/api/admin/merchants/search?query=${encodeURIComponent(query)}`
+    );
+    const { merchants, total } = await res.json();
+
+    const tbody = document.getElementById("userTableBody");
+    tbody.innerHTML = "";
+
+    // Render search results
+    merchants.forEach((merchant, index) => {
+      const row = `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${merchant.store_name}</td>
+          <td>${merchant.location}</td>
+          <td>${merchant.phone_number}</td>
+          <td>
+            <button class="btn btn-secondary" onclick="editMerchant('${
+              merchant.id
+            }')">Edit</button>
+            <button class="btn btn-secondary" onclick="viewMerchant('${
+              merchant.phone_number
+            }')">View</button>
+          </td>
+        </tr>`;
+      tbody.innerHTML += row;
+    });
+
+    document.getElementById(
+      "totalMerchants"
+    ).textContent = `Total Results: ${total}`;
+  } catch (error) {
+    alert("Failed to search merchants.");
+    console.error(error);
+  }
+}
+
+// View Merchant Details
+function viewMerchant(id) {
+  // Fetch merchant details and display in modal
+  fetch(`/api/admin/merchants/${id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const details = `
+        <p><strong>Store Name:</strong> ${data.store_name}</p>
+        <p><strong>Location:</strong> ${data.location}</p>
+        <p><strong>Phone Number:</strong> ${data.phone_number}</p>
+        <p><strong>Status:</strong> ${data.status}</p>
+      `;
+      document.getElementById("merchantDetails").innerHTML = details;
+      document.getElementById("viewModal").style.display = "block";
+    })
+    .catch((error) => {
+      alert("Failed to fetch merchant details.");
+      console.error(error);
+    });
+}
+
+// Edit Merchant
+function editMerchant(id) {
+  // Fetch merchant details and prefill the edit form
+  fetch(`/api/admin/merchants/${id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      document.getElementById("editMerchantId").value = data.id;
+      document.getElementById("editStoreName").value = data.store_name;
+      document.getElementById("editLocation").value = data.location;
+      document.getElementById("editPassword").value = ""; // Keep password empty
+      document.getElementById("editModal").style.display = "block";
+    })
+    .catch((error) => {
+      alert("Failed to fetch merchant details.");
+      console.error(error);
+    });
+}

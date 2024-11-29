@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"wac-offline-payment/internal/models"
 	"wac-offline-payment/internal/repository"
@@ -129,4 +130,26 @@ func handleEditMerchant(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"Merchant updated successfully"}`))
+}
+
+func SearchMerchants(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("query")
+	if query == "" {
+		http.Error(w, "Query parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	// Call the repository to search merchants
+	merchants, err := repository.SearchMerchants(strings.ToLower(query))
+	if err != nil {
+		http.Error(w, "Failed to search merchants", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"merchants": merchants,
+		"total":     len(merchants),
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
