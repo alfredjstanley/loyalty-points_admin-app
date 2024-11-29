@@ -53,26 +53,6 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
   }
 });
 
-// // Load Users
-// async function loadUsers() {
-//   const res = await fetch("/api/admin/users");
-//   const users = await res.json();
-
-//   const tbody = document.getElementById("userTableBody");
-//   tbody.innerHTML = "";
-
-//   users.forEach((user) => {
-//     const row = `<tr>
-//       <td>${user.store_name}</td>
-//       <td>${user.location}</td>
-//       <td>${user.phone_number}</td>
-//     </tr>`;
-//     tbody.innerHTML += row;
-//   });
-// }
-
-let currentPage = 1; // Initialize page
-
 async function loadUsers(page = 1) {
   try {
     const res = await fetch(`/api/admin/users?page=${page}&limit=10`);
