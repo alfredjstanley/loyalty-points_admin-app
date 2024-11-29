@@ -8,6 +8,7 @@ import (
 	"wac-offline-payment/internal/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -101,4 +102,26 @@ func GetUsersWithPagination(page, limit int) ([]models.User, int, error) {
 	}
 
 	return users, int(total), nil
+}
+
+func UpdateMerchant(id primitive.ObjectID, update models.MerchantUpdate) error {
+	collection := client.Database("olopo-points").Collection("users")
+
+	updateFields := bson.M{}
+	if update.StoreName != "" {
+		updateFields["store_name"] = update.StoreName
+	}
+	if update.Location != "" {
+		updateFields["location"] = update.Location
+	}
+	if update.Password != "" {
+		updateFields["password"] = update.Password
+	}
+
+	_, err := collection.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id},
+		bson.M{"$set": updateFields},
+	)
+	return err
 }
