@@ -66,6 +66,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  overflow-y: scroll;
 }
 
 .header h2 {
@@ -89,7 +90,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 700px;
+  max-width: 850px;
   margin: auto;
 }
 
@@ -337,4 +338,11 @@ body {
 
 .search-bar button:hover {
   background-color: #eb984e;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
 }

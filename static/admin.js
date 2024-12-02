@@ -7,6 +7,12 @@ document.getElementById("listUsersTab").addEventListener("click", () => {
   loadUsers(); // Load users when navigating to the Merchant List
 });
 
+// Handle sidebar navigation
+document.getElementById("transactionLogsTab").addEventListener("click", () => {
+  showSection("transactionLogsSection", "transactionLogsTab");
+  loadTransactionLogs(); // Load logs when section is clicked
+});
+
 function showSection(sectionId, tabId) {
   document
     .querySelectorAll(".section")
@@ -61,7 +67,7 @@ async function loadUsers(page = 1) {
           <td>${user.store_name}</td>
           <td>${user.location}</td>
           <td>${user.phone_number}</td>
-          <td>
+          <td class="table-actions">
             <button class="btn view-btn" data-id="${
               user.phone_number
             }">View</button>
@@ -208,12 +214,6 @@ document
     document.getElementById("viewModal").style.display = "none";
   });
 
-// Handle sidebar navigation
-document.getElementById("transactionLogsTab").addEventListener("click", () => {
-  showSection("transactionLogsSection", "transactionLogsTab");
-  loadTransactionLogs(); // Load logs when section is clicked
-});
-
 // Load transaction logs
 async function loadTransactionLogs(page = 1) {
   try {
@@ -311,7 +311,7 @@ async function searchMerchants(query) {
           <td>${merchant.store_name}</td>
           <td>${merchant.location}</td>
           <td>${merchant.phone_number}</td>
-          <td>
+          <td class="table-actions">
             <button class="btn btn-secondary" onclick="editMerchant('${
               merchant.id
             }')">Edit</button>
