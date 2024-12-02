@@ -13,17 +13,39 @@ document.getElementById("transactionLogsTab").addEventListener("click", () => {
   loadTransactionLogs(); // Load logs when section is clicked
 });
 
-function showSection(sectionId, tabId) {
-  document
-    .querySelectorAll(".section")
-    .forEach((section) => section.classList.remove("active"));
-  document.getElementById(sectionId).classList.add("active");
+// Close modal
+document
+  .querySelector("#viewModal .close-btn")
+  .addEventListener("click", () => {
+    document.getElementById("viewModal").style.display = "none";
+  });
 
-  document
-    .querySelectorAll(".sidebar nav ul li a")
-    .forEach((link) => link.classList.remove("active"));
-  document.getElementById(tabId).classList.add("active");
-}
+// Close Edit Modal
+document.querySelector(".close-btn").addEventListener("click", () => {
+  document.getElementById("editModal").style.display = "none";
+});
+
+// Submit Edit Form
+document.getElementById("editForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const id = document.getElementById("editMerchantId").value;
+  const store_name = document.getElementById("editStoreName").value;
+  const location = document.getElementById("editLocation").value;
+  const password = document.getElementById("editPassword").value;
+
+  try {
+    await fetch("/api/admin/edit-merchant", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, store_name, location, password }),
+    });
+    alert("Merchant updated successfully!");
+    document.getElementById("editModal").style.display = "none";
+    loadUsers();
+  } catch (error) {
+    alert("Failed to update merchant.");
+  }
+});
 
 // Add Merchant
 document.getElementById("addUserForm").addEventListener("submit", async (e) => {
@@ -47,6 +69,30 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
     alert("Failed to add merchant.");
   }
 });
+
+// Add event listener for button click
+document
+  .getElementById("searchButton")
+  .addEventListener("click", triggerSearch);
+
+// Add event listener for 'Enter' key press
+document.getElementById("searchInput").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    triggerSearch();
+  }
+});
+
+function showSection(sectionId, tabId) {
+  document
+    .querySelectorAll(".section")
+    .forEach((section) => section.classList.remove("active"));
+  document.getElementById(sectionId).classList.add("active");
+
+  document
+    .querySelectorAll(".sidebar nav ul li a")
+    .forEach((link) => link.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+}
 
 // Load Merchants with Pagination
 async function loadUsers(page = 1) {
@@ -120,6 +166,16 @@ function renderPagination(total, limit, currentPage) {
   );
 }
 
+// search fn
+function triggerSearch() {
+  const query = document.getElementById("searchInput").value.trim();
+  if (query) {
+    searchMerchants(query);
+  } else {
+    loadUsers();
+  }
+}
+
 // Edit Merchant
 document.addEventListener("click", (e) => {
   if (e.target.classList.contains("edit-btn")) {
@@ -129,33 +185,6 @@ document.addEventListener("click", (e) => {
       row.children[1].textContent;
     document.getElementById("editLocation").value = row.children[2].textContent;
     document.getElementById("editModal").style.display = "block";
-  }
-});
-
-// Close Edit Modal
-document.querySelector(".close-btn").addEventListener("click", () => {
-  document.getElementById("editModal").style.display = "none";
-});
-
-// Submit Edit Form
-document.getElementById("editForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const id = document.getElementById("editMerchantId").value;
-  const store_name = document.getElementById("editStoreName").value;
-  const location = document.getElementById("editLocation").value;
-  const password = document.getElementById("editPassword").value;
-
-  try {
-    await fetch("/api/admin/edit-merchant", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, store_name, location, password }),
-    });
-    alert("Merchant updated successfully!");
-    document.getElementById("editModal").style.display = "none";
-    loadUsers();
-  } catch (error) {
-    alert("Failed to update merchant.");
   }
 });
 
@@ -206,13 +235,6 @@ document.addEventListener("click", async (e) => {
     }
   }
 });
-
-// Close the modal
-document
-  .querySelector("#viewModal .close-btn")
-  .addEventListener("click", () => {
-    document.getElementById("viewModal").style.display = "none";
-  });
 
 // Load transaction logs
 async function loadTransactionLogs(page = 1) {
@@ -283,16 +305,6 @@ function renderLogsPagination(total, limit, page) {
   pagination.appendChild(nextButton);
 }
 
-document.getElementById("searchButton").addEventListener("click", () => {
-  const query = document.getElementById("searchInput").value.trim();
-  if (query) {
-    searchMerchants(query);
-  } else {
-    // Reload all merchants if search query is empty
-    loadUsers();
-  }
-});
-
 async function searchMerchants(query) {
   try {
     const res = await fetch(
@@ -312,12 +324,10 @@ async function searchMerchants(query) {
           <td>${merchant.location}</td>
           <td>${merchant.phone_number}</td>
           <td class="table-actions">
-            <button class="btn btn-secondary" onclick="editMerchant('${
-              merchant.id
-            }')">Edit</button>
-            <button class="btn btn-secondary" onclick="viewMerchant('${
+            <button class="btn edit-btn" data-id="${merchant.id}">Edit</button>
+            <button class="btn view-btn" data-id="${
               merchant.phone_number
-            }')">View</button>
+            }")">View</button>
           </td>
         </tr>`;
       tbody.innerHTML += row;
