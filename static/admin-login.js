@@ -1,9 +1,32 @@
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+async function checkLoginStatus() {
+  const adminToken = sessionStorage.getItem("adminToken");
 
-  const username = document.getElementById("username").value;
-  const password = document.getElementById("password").value;
+  if (adminToken) {
+    try {
+      // Use the token to request the admin page
+      const adminResponse = await fetch("/admin/home", {
+        method: "GET",
+        headers: { Authorization: adminToken },
+      });
 
+      if (adminResponse.ok) {
+        const html = await adminResponse.text();
+        document.open();
+        document.write(html);
+        document.close();
+      } else {
+        // Token is invalid or expired, clear the token and show the login page
+        sessionStorage.removeItem("adminToken");
+        console.error("Token invalid or expired.");
+      }
+    } catch (err) {
+      console.error("Error checking login status:", err);
+      sessionStorage.removeItem("adminToken");
+    }
+  }
+}
+
+async function handleLogin(username, password) {
   try {
     const response = await fetch("/api/admin/login", {
       method: "POST",
@@ -23,7 +46,6 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       });
 
       if (adminResponse.ok) {
-        // Parse and replace the document body with the returned HTML
         const html = await adminResponse.text();
         document.open();
         document.write(html);
@@ -41,5 +63,17 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
       "An error occurred. Please try again.";
     console.error(err);
   }
-});
+}
 
+// Check login status on page load
+document.addEventListener("DOMContentLoaded", checkLoginStatus);
+
+// Login form submission handler
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+
+  await handleLogin(username, password);
+});
