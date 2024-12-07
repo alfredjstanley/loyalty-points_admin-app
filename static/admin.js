@@ -34,9 +34,14 @@ document.getElementById("editForm").addEventListener("submit", async (e) => {
   const password = document.getElementById("editPassword").value;
 
   try {
+    const adminToken = sessionStorage.getItem("adminToken");
+
     await fetch("/api/admin/edit-merchant", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: adminToken,
+      },
       body: JSON.stringify({ id, store_name, location, password }),
     });
     alert("Merchant updated successfully!");
@@ -58,9 +63,14 @@ document.getElementById("addUserForm").addEventListener("submit", async (e) => {
     password: formData.get("password"),
   };
   try {
+    const adminToken = sessionStorage.getItem("adminToken");
+
     await fetch("/api/admin/onboard", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: adminToken,
+      },
       body: JSON.stringify(user),
     });
     alert("Merchant added successfully!");
@@ -97,7 +107,12 @@ function showSection(sectionId, tabId) {
 // Load Merchants with Pagination
 async function loadUsers(page = 1) {
   try {
-    const res = await fetch(`/api/admin/users?page=${page}&limit=10`);
+    const adminToken = sessionStorage.getItem("adminToken");
+
+    const res = await fetch(`/api/admin/users?page=${page}&limit=10`, {
+      method: "GET",
+      headers: { Authorization: adminToken },
+    });
     const { users, total, limit } = await res.json();
 
     const tbody = document.getElementById("userTableBody");
@@ -191,13 +206,18 @@ document.addEventListener("click", (e) => {
 document.addEventListener("click", async (e) => {
   if (e.target.classList.contains("view-btn")) {
     const mobileNumber = e.target.dataset.id; // Get the merchant ID
+    const adminToken = sessionStorage.getItem("adminToken");
+
     try {
       // Fetch merchant details from the API
       const res = await fetch(
         `/api/admin/edit-merchant?mobileNumber=${mobileNumber}`,
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: adminToken,
+          },
         }
       );
 
@@ -239,8 +259,14 @@ document.addEventListener("click", async (e) => {
 // Load transaction logs
 async function loadTransactionLogs(page = 1) {
   try {
+    const adminToken = sessionStorage.getItem("adminToken");
+
     const res = await fetch(
-      `/api/admin/transaction-logs?page=${page}&limit=10`
+      `/api/admin/transaction-logs?page=${page}&limit=10`,
+      {
+        method: "GET",
+        headers: { Authorization: adminToken },
+      }
     );
     const data = await res.json(); // Parse the response as JSON
 
@@ -307,8 +333,14 @@ function renderLogsPagination(total, limit, page) {
 
 async function searchMerchants(query) {
   try {
+    const adminToken = sessionStorage.getItem("adminToken");
+
     const res = await fetch(
-      `/api/admin/merchants/search?query=${encodeURIComponent(query)}`
+      `/api/admin/merchants/search?query=${encodeURIComponent(query)}`,
+      {
+        method: "GET",
+        headers: { Authorization: adminToken },
+      }
     );
     const { merchants, total } = await res.json();
 
@@ -345,7 +377,12 @@ async function searchMerchants(query) {
 // View Merchant Details
 function viewMerchant(id) {
   // Fetch merchant details and display in modal
-  fetch(`/api/admin/merchants/${id}`)
+  const adminToken = sessionStorage.getItem("adminToken");
+
+  fetch(`/api/admin/merchants/${id}`, {
+    method: "GET",
+    headers: { Authorization: adminToken },
+  })
     .then((response) => response.json())
     .then((data) => {
       const details = `
@@ -366,7 +403,12 @@ function viewMerchant(id) {
 // Edit Merchant
 function editMerchant(id) {
   // Fetch merchant details and prefill the edit form
-  fetch(`/api/admin/merchants/${id}`)
+  const adminToken = sessionStorage.getItem("adminToken");
+
+  fetch(`/api/admin/merchants/${id}`, {
+    method: "GET",
+    headers: { Authorization: adminToken },
+  })
     .then((response) => response.json())
     .then((data) => {
       document.getElementById("editMerchantId").value = data.id;
