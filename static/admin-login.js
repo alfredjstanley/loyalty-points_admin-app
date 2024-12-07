@@ -65,8 +65,8 @@ async function handleLogin(username, password) {
   }
 }
 
-// Check login status on page load
-document.addEventListener("DOMContentLoaded", checkLoginStatus);
+// // Check login status on page load
+// document.addEventListener("DOMContentLoaded", checkLoginStatus);
 
 // Login form submission handler
 document.getElementById("loginForm").addEventListener("submit", async (e) => {

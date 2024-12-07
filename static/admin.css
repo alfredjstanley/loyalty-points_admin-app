@@ -346,3 +346,29 @@ body {
   justify-content: space-around;
   gap: 5px;
 }
+
+/* Sidebar Logout Container */
+.logout-container {
+  margin-top: auto; /* Push to the bottom */
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Separate visually */
+}
+
+/* Logout Button Styling */
+.logout-btn {
+  width: 90%;
+  background-color: #ff5f5f; /* Eye-catching red color */
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #e63939; /* Slightly darker on hover */
+}

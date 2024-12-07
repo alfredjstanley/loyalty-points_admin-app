@@ -380,3 +380,12 @@ function editMerchant(id) {
       console.error(error);
     });
 }
+
+// Logout functionality
+document.getElementById("logoutButton").addEventListener("click", () => {
+  // Remove the JWT token from localStorage
+  localStorage.removeItem("adminToken");
+
+  // Redirect to the login page
+  window.location.reload();
+});
