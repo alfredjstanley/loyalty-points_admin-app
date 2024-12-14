@@ -7,6 +7,10 @@ document.getElementById("listUsersTab").addEventListener("click", () => {
   loadUsers(); // Load users when navigating to the Merchant List
 });
 
+document
+  .getElementById("totalTransactionPoints")
+  .addEventListener("click", loadSidebarStats);
+
 // Handle sidebar navigation
 document.getElementById("transactionLogsTab").addEventListener("click", () => {
   showSection("transactionLogsSection", "transactionLogsTab");
