@@ -51,7 +51,7 @@ func HandlePoints(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for duplicate invoice_id with status "SUCCESS"
-	exists, err := repository.InvoiceExists(paymentReq.InvoiceID)
+	exists, err := repository.InvoiceExists(paymentReq.InvoiceID, paymentReq.MerchantMobileNumber)
 	if err != nil {
 		http.Error(w, "Failed to check invoice existence: "+err.Error(), http.StatusInternalServerError)
 		return
