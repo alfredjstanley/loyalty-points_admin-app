@@ -299,36 +299,79 @@ async function loadTransactionLogs(page = 1) {
 }
 
 // Render pagination buttons
-function renderLogsPagination(total, limit, page) {
+function renderLogsPagination(total, limit, currentPage) {
   const pagination = document.getElementById("logsPagination");
   pagination.innerHTML = ""; // Clear existing pagination
 
   const totalPages = Math.ceil(total / limit);
-
   if (totalPages <= 1) return; // No pagination needed for a single page
 
-  // Add Previous button
-  const prevButton = document.createElement("button");
-  prevButton.textContent = "Previous";
-  prevButton.disabled = page === 1; // Disable if on the first page
-  prevButton.addEventListener("click", () => loadTransactionLogs(page - 1));
-  pagination.appendChild(prevButton);
+  const visiblePages = 5;
 
-  // Add numbered page buttons
-  for (let i = 1; i <= totalPages; i++) {
-    const pageButton = document.createElement("button");
-    pageButton.textContent = i;
-    pageButton.className = i === page ? "active" : ""; // Highlight current page
-    pageButton.addEventListener("click", () => loadTransactionLogs(i));
-    pagination.appendChild(pageButton);
+  // Helper to create pagination buttons
+  const createButton = (text, disabled, onClick) => {
+    const button = document.createElement("button");
+    button.textContent = text;
+    button.disabled = disabled;
+    if (onClick) button.addEventListener("click", onClick);
+    return button;
+  };
+
+  // Add "Previous" button
+  pagination.appendChild(
+    createButton("Previous", currentPage === 1, () =>
+      loadTransactionLogs(currentPage - 1)
+    )
+  );
+
+  // Add the first page button
+  if (currentPage > 1) {
+    pagination.appendChild(
+      createButton(1, false, () => loadTransactionLogs(1))
+    );
   }
 
-  // Add Next button
-  const nextButton = document.createElement("button");
-  nextButton.textContent = "Next";
-  nextButton.disabled = page === totalPages; // Disable if on the last page
-  nextButton.addEventListener("click", () => loadTransactionLogs(page + 1));
-  pagination.appendChild(nextButton);
+  // Add ellipsis if currentPage is beyond the visible range
+  if (currentPage > Math.floor(visiblePages / 2) + 2) {
+    const ellipsis = document.createElement("span");
+    ellipsis.textContent = "...";
+    pagination.appendChild(ellipsis);
+  }
+
+  // Calculate start and end pages
+  const startPage = Math.max(2, currentPage - Math.floor(visiblePages / 2));
+  const endPage = Math.min(
+    totalPages - 1,
+    currentPage + Math.floor(visiblePages / 2)
+  );
+
+  // Add page buttons for the visible range
+  for (let i = startPage; i <= endPage; i++) {
+    const button = createButton(i, false, () => loadTransactionLogs(i));
+    if (i === currentPage) button.className = "active"; // Highlight the current page
+    pagination.appendChild(button);
+  }
+
+  // Add ellipsis if not at the end
+  if (currentPage < totalPages - Math.floor(visiblePages / 2) - 1) {
+    const ellipsis = document.createElement("span");
+    ellipsis.textContent = "...";
+    pagination.appendChild(ellipsis);
+  }
+
+  // Add the last page button
+  if (currentPage < totalPages) {
+    pagination.appendChild(
+      createButton(totalPages, false, () => loadTransactionLogs(totalPages))
+    );
+  }
+
+  // Add "Next" button
+  pagination.appendChild(
+    createButton("Next", currentPage === totalPages, () =>
+      loadTransactionLogs(currentPage + 1)
+    )
+  );
 }
 
 async function searchMerchants(query) {
