@@ -110,9 +110,11 @@ async function handleFormSubmit(event) {
       showModal("Points transferred successfully!");
       form.reset();
       populateMerchantPhone();
-    } else {
-      const error = await response.json();
-      showModal(`Error: ${error.message}`);
+    }
+    if (response.status == 409) {
+      showModal(
+        "Duplicate entry: a successful transaction with this invoice ID already exists"
+      );
     }
   } catch (error) {
     hideLoader();

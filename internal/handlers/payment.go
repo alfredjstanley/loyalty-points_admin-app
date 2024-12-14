@@ -50,21 +50,32 @@ func HandlePoints(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Step 1: Authenticate and get token
+	// Check for duplicate invoice_id with status "SUCCESS"
+	exists, err := repository.InvoiceExists(paymentReq.InvoiceID)
+	if err != nil {
+		http.Error(w, "Failed to check invoice existence: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if exists {
+		http.Error(w, "Duplicate entry: a successful transaction with this invoice_id already exists", http.StatusConflict)
+		return
+	}
+
+	// Authenticate and get token
 	authToken, err := authenticate()
 	if err != nil {
 		http.Error(w, "Authentication failed: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
-	// Step 2: Make payment request
+	// Make payment request
 	paymentRes, err := makePaymentRequest(paymentReq, authToken)
 	logStatus := "SUCCESS"
 	if err != nil {
 		logStatus = "FAILURE"
 	}
 
-	// Step 3: Save log to MongoDB
+	// Save log to MongoDB
 	logEntry := models.Log{
 		UserPhone:     paymentReq.UserMobileNumber,
 		MerchantPhone: paymentReq.MerchantMobileNumber,
@@ -74,11 +85,13 @@ func HandlePoints(w http.ResponseWriter, r *http.Request) {
 		Status:        logStatus,
 		Response:      paymentRes,
 	}
-	if saveErr := repository.SaveLog(logEntry); saveErr != nil {
-		log.Printf("Failed to save log: %v", saveErr)
+	saveErr := repository.SaveLog(logEntry)
+	if saveErr != nil {
+		http.Error(w, "Failed to save log: "+saveErr.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	// Step 4: Respond to the user
+	// Respond to the user
 	if err != nil {
 		http.Error(w, "Payment processing failed: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -186,32 +199,4 @@ func RenderForm(templatesDir string) http.HandlerFunc {
 		}
 		tmpl.Execute(w, nil)
 	}
-}
-
-// HandlePaymentSubmission processes the form submission
-func HandlePaymentSubmission(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// Extract form data
-	userPhone := r.FormValue("userPhone")
-	merchantPhone := r.FormValue("merchantPhone")
-	amount := r.FormValue("amount")
-	invoiceID := r.FormValue("invoiceId")
-	paymentMode := r.FormValue("paymentMode")
-
-	// Log the submitted data
-	log.Printf("Received Payment Details:\nUser Phone: %s\nMerchant Phone: %s\nAmount: %s\nInvoice ID: %s\nPayment Mode: %s",
-		userPhone, merchantPhone, amount, invoiceID, paymentMode)
-
-	// Simulate a success response
-	message := fmt.Sprintf("Payment processed successfully!<br>User Phone: %s<br>Merchant Phone: %s<br>Amount: %s<br>Invoice ID: %s<br>Payment Mode: %s",
-		userPhone, merchantPhone, amount, invoiceID, paymentMode)
-
-	// Send response back to the user
-	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(message))
 }

@@ -101,3 +101,21 @@ func SearchTransactionLogs(query string) ([]models.Log, error) {
 
 	return logs, nil
 }
+
+func InvoiceExists(invoiceID string) (bool, error) {
+	collection := client.Database("wac-points").Collection("logs")
+
+	filter := bson.M{"invoice_id": invoiceID, "status": "SUCCESS"}
+
+	// Use FindOne to check if a document exists
+	var result bson.M
+	err := collection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return false, nil // Document doesn't exist
+		}
+		return false, err // Some other error occurred
+	}
+
+	return true, nil // Document exists
+}
