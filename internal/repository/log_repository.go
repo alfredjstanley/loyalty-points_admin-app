@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"strconv"
 
 	"wac-offline-payment/internal/models"
 
@@ -68,4 +69,35 @@ func GetTotalTransactionAmount() (float64, error) {
 		return result[0]["totalAmount"].(float64), nil
 	}
 	return 0, nil
+}
+
+func SearchTransactionLogs(query string) ([]models.Log, error) {
+	collection := client.Database("wac-points").Collection("logs")
+
+	// Use regex to match query in UserPhone, MerchantPhone, InvoiceID, or Status
+	filter := bson.M{
+		"$or": []bson.M{
+			{"user_phone": bson.M{"$regex": query, "$options": "i"}},
+			{"merchant_phone": bson.M{"$regex": query, "$options": "i"}},
+			{"amount": bson.M{"$regex": query, "$options": "i"}},
+			{"invoice_id": bson.M{"$regex": query, "$options": "i"}},
+		},
+	}
+
+	// Check if query is a valid number (for amount field search)
+	if amount, err := strconv.ParseFloat(query, 64); err == nil {
+		filter["$or"] = append(filter["$or"].([]bson.M), bson.M{"amount": amount})
+	}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var logs []models.Log
+	if err := cursor.All(context.Background(), &logs); err != nil {
+		return nil, err
+	}
+
+	return logs, nil
 }

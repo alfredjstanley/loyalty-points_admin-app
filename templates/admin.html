@@ -172,7 +172,23 @@
         <!-- Transaction Logs Section -->
         <section id="transactionLogsSection" class="section">
           <div class="card">
-            <h3>Transaction Logs</h3>
+            <!-- Header with Search Button -->
+            <div class="header-bar">
+              <h3>Transaction Logs</h3>
+              <div class="search-bar">
+                <input
+                  type="text"
+                  id="transactionSearchInput"
+                  placeholder="Phone, amount or invoice"
+                  class="form-control"
+                />
+                <button id="transactionSearchButton" class="btn btn-primary">
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+            </div>
+
+            <!-- Logs Table -->
             <table class="user-table">
               <thead>
                 <tr>
@@ -187,6 +203,8 @@
               </thead>
               <tbody id="logsTableBody"></tbody>
             </table>
+
+            <!-- Pagination for Logs -->
             <div id="logsPagination" class="pagination"></div>
           </div>
         </section>

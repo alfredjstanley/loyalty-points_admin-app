@@ -66,3 +66,26 @@ func GetTotalTransactionAmount(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
+
+func SearchTransactionLogs(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("query")
+	if query == "" {
+		http.Error(w, `{"success": false, "message": "Query parameter is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	// Fetch search results from repository
+	logs, err := repository.SearchTransactionLogs(query)
+	if err != nil {
+		http.Error(w, `{"success": false, "message": "Failed to fetch logs"}`, http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"logs":    logs,
+		"total":   len(logs),
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}

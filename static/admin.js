@@ -535,3 +535,81 @@ document.addEventListener("DOMContentLoaded", loadSidebarStats);
 
 // Load stats on page load
 document.addEventListener("DOMContentLoaded", loadSidebarStats);
+
+async function searchTransactionLogs(query) {
+  try {
+    const adminToken = sessionStorage.getItem("adminToken");
+
+    // Make an API request to search transaction logs
+    const res = await fetch(
+      `/api/admin/transaction-logs/search?query=${encodeURIComponent(query)}`,
+      {
+        method: "GET",
+        headers: { Authorization: adminToken },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("No Logs found.");
+    }
+
+    const { logs, total } = await res.json();
+
+    const tbody = document.getElementById("logsTableBody");
+    tbody.innerHTML = ""; // Clear existing rows
+
+    // Render search results
+    logs.forEach((log, index) => {
+      const date = new Date(log.CreatedAt).toLocaleString(); // Format the date
+      const row = `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${log.UserPhone}</td>
+          <td>${log.MerchantPhone}</td>
+          <td>${log.Amount.toFixed(2)}</td>
+          <td>${log.InvoiceID}</td>
+          <td>${log.Status}</td>
+          <td>${date}</td>
+        </tr>`;
+      tbody.innerHTML += row;
+    });
+
+    // Update the total logs count
+    document.getElementById(
+      "totalMerchants"
+    ).textContent = `Search Results: ${total}`;
+  } catch (error) {
+    console.error("Error searching transaction logs:", error);
+    alert("No logs found.");
+  }
+}
+
+// Add event listener for search button
+document
+  .getElementById("transactionSearchButton")
+  .addEventListener("click", () => {
+    const query = document
+      .getElementById("transactionSearchInput")
+      .value.trim();
+    if (query) {
+      searchTransactionLogs(query);
+    } else {
+      loadTransactionLogs(); // Reload all logs if the search input is empty
+    }
+  });
+
+// Add event listener for 'Enter' key in search input
+document
+  .getElementById("transactionSearchInput")
+  .addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      const query = document
+        .getElementById("transactionSearchInput")
+        .value.trim();
+      if (query) {
+        searchTransactionLogs(query);
+      } else {
+        loadTransactionLogs(); // Reload all logs if the search input is empty
+      }
+    }
+  });
