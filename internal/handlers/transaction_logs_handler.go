@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -54,7 +53,6 @@ func GetSuccessTransactionCount(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTotalTransactionAmount(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("hello from 'GetTotalTransactionAmount'")
 	totalAmount, err := repository.GetTotalTransactionAmount()
 	if err != nil {
 		http.Error(w, `{"success": false, "message": "Failed to fetch total transaction amount"}`, http.StatusInternalServerError)

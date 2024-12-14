@@ -51,8 +51,8 @@ func GetSuccessTransactionCount() (int, error) {
 
 func GetTotalTransactionAmount() (float64, error) {
 	collection := client.Database("wac-points").Collection("logs")
-	matchStage := bson.D{{"$match", bson.D{{"status", "SUCCESS"}}}}
-	groupStage := bson.D{{"$group", bson.D{{"_id", nil}, {"totalAmount", bson.D{{"$sum", "$amount"}}}}}}
+	matchStage := bson.D{{Key: "$match", Value: bson.D{{Key: "status", Value: "SUCCESS"}}}}
+	groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: nil}, {Key: "totalAmount", Value: bson.D{{Key: "$sum", Value: "$amount"}}}}}}
 
 	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{matchStage, groupStage})
 	if err != nil {

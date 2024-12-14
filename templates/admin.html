@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/static/admin.css" />
+    <!-- Font Awesome CDN -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="admin-dashboard">
@@ -16,14 +21,49 @@
         <nav>
           <ul>
             <li>
-              <a href="#" id="addUserTab" class="active">Configuration</a>
+              <a href="#" id="addUserTab" class="active">
+                <i class="fas fa-cogs"></i> Configuration
+              </a>
             </li>
-            <li><a href="#" id="listUsersTab">Merchant List</a></li>
-            <li><a href="#" id="transactionLogsTab">Transaction Logs</a></li>
+            <li>
+              <a href="#" id="listUsersTab">
+                <i class="fas fa-store"></i> Merchant List
+              </a>
+            </li>
+            <li>
+              <a href="#" id="transactionLogsTab">
+                <i class="fas fa-file-alt"></i> Transaction Logs
+              </a>
+            </li>
           </ul>
         </nav>
+
+        <!-- Sidebar Stats Section -->
+        <div class="sidebar-stats">
+          <div class="stat">
+            <div class="stat-title">
+              <i class="fas fa-chart-bar"></i> Total Transactions
+            </div>
+            <div id="totalTransactionCount" class="stat-value">Loading...</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">
+              <i class="fas fa-wallet"></i> Total Amount
+            </div>
+            <div id="totalTransactionAmount" class="stat-value">Loading...</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">
+              <i class="fas fa-coins"></i> Total Points
+            </div>
+            <div id="totalTransactionPoints" class="stat-value">Loading...</div>
+          </div>
+        </div>
+
         <div class="logout-container">
-          <button id="logoutButton" class="btn logout-btn">Logout</button>
+          <button id="logoutButton" class="btn logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
         </div>
       </aside>
 
@@ -31,22 +71,13 @@
       <main class="main-content">
         <!-- Header -->
         <header class="header">
-          <div class="stats-bar">
-            <div class="stat-item" id="totalTransactionAmount">
-              <h3>Total Transaction Amount</h3>
-              <p>Loading...</p>
-            </div>
-          </div>
-
           <img
             src="/static/Olopo-logo.png"
             alt="Logo"
             class="logo"
             width="80px"
           />
-          <div id="transactionCount" class="transaction-count">
-            Total Successful Transactions: 0
-          </div>
+
           <h2 id="sectionTitle" style="display: none">Add Merchant</h2>
         </header>
 
@@ -96,7 +127,7 @@
                 />
               </div>
               <button type="submit" class="btn btn-primary">
-                Configure Merchant
+                <i class="fas fa-user-plus"></i> Configure Merchant
               </button>
             </form>
           </div>
@@ -116,7 +147,7 @@
                   class="form-control"
                 />
                 <button id="searchButton" class="btn btn-primary">
-                  Search
+                  <i class="fas fa-search"></i> Search
                 </button>
               </div>
             </div>
@@ -180,8 +211,12 @@
             <label for="editPassword">New Password</label>
             <input type="password" id="editPassword" name="password" />
           </div>
-          <button type="submit" class="btn">Save Changes</button>
-          <button type="button" class="btn close-btn">Cancel</button>
+          <button type="submit" class="btn">
+            <i class="fas fa-save"></i> Save Changes
+          </button>
+          <button type="button" class="btn close-btn">
+            <i class="fas fa-times"></i> Cancel
+          </button>
         </form>
       </div>
     </div>

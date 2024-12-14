@@ -432,56 +432,63 @@ document.getElementById("logoutButton").addEventListener("click", () => {
   window.location.reload();
 });
 
-// display total success transaction count.
-async function loadTransactionCount() {
+async function loadSidebarStats() {
   try {
     const adminToken = sessionStorage.getItem("adminToken");
-    const response = await fetch("/api/admin/transaction-count", {
-      method: "GET",
-      headers: { Authorization: adminToken },
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      document.getElementById(
-        "transactionCount"
-      ).textContent = `Total Successful Transactions: ${data.count}`;
+    // Fetch transaction count
+    const transactionCountResponse = await fetch(
+      "/api/admin/transaction-count",
+      {
+        method: "GET",
+        headers: { Authorization: adminToken },
+      }
+    );
+
+    if (transactionCountResponse.ok) {
+      const transactionCountData = await transactionCountResponse.json();
+      document.getElementById("totalTransactionCount").textContent =
+        transactionCountData.count;
     } else {
       console.error("Failed to fetch transaction count");
+      document.getElementById("totalTransactionCount").textContent = "Error";
     }
-  } catch (error) {
-    console.error("Error fetching transaction count:", error);
-  }
-}
-async function loadTotalTransactionAmount() {
-  try {
-    const adminToken = sessionStorage.getItem("adminToken");
-    const response = await fetch("/api/admin/total-transaction-amount", {
-      method: "GET",
-      headers: { Authorization: adminToken },
-    });
 
-    if (response.ok) {
-      const data = await response.json();
-      console.log(`data knri `, data);
-      document.querySelector(
-        "#totalTransactionAmount p"
-      ).textContent = `₹${data.totalAmount.toFixed(2)}`;
+    // Fetch total transaction amount
+    const totalAmountResponse = await fetch(
+      "/api/admin/total-transaction-amount",
+      {
+        method: "GET",
+        headers: { Authorization: adminToken },
+      }
+    );
+
+    if (totalAmountResponse.ok) {
+      const totalAmountData = await totalAmountResponse.json();
+      const totalAmount = totalAmountData.totalAmount.toFixed(2);
+      document.getElementById(
+        "totalTransactionAmount"
+      ).textContent = `₹${totalAmount}`;
+
+      // Calculate Total Points
+      const totalPoints = (totalAmount / 25).toFixed(2);
+      document.getElementById("totalTransactionPoints").textContent =
+        totalPoints;
     } else {
       console.error("Failed to fetch total transaction amount");
-      document.querySelector("#totalTransactionAmount p").textContent =
-        "Error loading data";
+      document.getElementById("totalTransactionAmount").textContent = "Error";
+      document.getElementById("totalTransactionPoints").textContent = "Error";
     }
   } catch (error) {
-    console.log(`error knri `, error);
-    console.error("Error fetching total transaction amount:", error);
-    document.querySelector("#totalTransactionAmount p").textContent =
-      "Error loading data";
+    console.error("Error fetching sidebar stats:", error);
+    document.getElementById("totalTransactionCount").textContent = "Error";
+    document.getElementById("totalTransactionAmount").textContent = "Error";
+    document.getElementById("totalTransactionPoints").textContent = "Error";
   }
 }
 
-// Call the function on page load
-document.addEventListener("DOMContentLoaded", loadTotalTransactionAmount);
+// Load stats on page load
+document.addEventListener("DOMContentLoaded", loadSidebarStats);
 
-// Load transaction count on page load
-document.addEventListener("DOMContentLoaded", loadTransactionCount);
+// Load stats on page load
+document.addEventListener("DOMContentLoaded", loadSidebarStats);
