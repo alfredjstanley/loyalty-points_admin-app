@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"wac-offline-payment/internal/models"
@@ -56,7 +57,12 @@ func handleViewMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Step 2: Fetch merchant details from the third-party API
-	apiURL := fmt.Sprintf("https://olopo-dev.webc.in/api/merchant/details?mobileNumber=%s", mobileNumber)
+	// Get the base URL from the environment variable
+	baseURL := os.Getenv("WAC_BASE_URL")
+
+	// Format the full API URL
+	apiURL := fmt.Sprintf("%s/api/merchant/details?mobileNumber=%s", baseURL, mobileNumber)
+
 	req, _ := http.NewRequest(http.MethodGet, apiURL, nil)
 	req.Header.Set("Authorization", "Bearer "+token)
 
