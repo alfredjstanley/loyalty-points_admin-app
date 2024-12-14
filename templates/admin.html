@@ -31,12 +31,22 @@
       <main class="main-content">
         <!-- Header -->
         <header class="header">
+          <div class="stats-bar">
+            <div class="stat-item" id="totalTransactionAmount">
+              <h3>Total Transaction Amount</h3>
+              <p>Loading...</p>
+            </div>
+          </div>
+
           <img
             src="/static/Olopo-logo.png"
             alt="Logo"
             class="logo"
             width="80px"
           />
+          <div id="transactionCount" class="transaction-count">
+            Total Successful Transactions: 0
+          </div>
           <h2 id="sectionTitle" style="display: none">Add Merchant</h2>
         </header>
 

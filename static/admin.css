@@ -372,3 +372,34 @@ body {
 .logout-btn:hover {
   background-color: #e63939; /* Slightly darker on hover */
 }
+
+.transaction-count {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.stats-bar {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item h3 {
+  font-size: 18px;
+  color: #fc8118;
+}
+
+.stat-item p {
+  font-size: 16px;
+  color: #333;
+}

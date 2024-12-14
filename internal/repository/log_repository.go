@@ -6,6 +6,7 @@ import (
 	"wac-offline-payment/internal/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -37,4 +38,34 @@ func GetLogsWithPagination(page, limit int) ([]models.Log, int, error) {
 	}
 
 	return logs, int(total), nil
+}
+
+func GetSuccessTransactionCount() (int, error) {
+	collection := client.Database("wac-points").Collection("logs")
+	count, err := collection.CountDocuments(context.Background(), bson.M{"status": "SUCCESS"})
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
+func GetTotalTransactionAmount() (float64, error) {
+	collection := client.Database("wac-points").Collection("logs")
+	matchStage := bson.D{{"$match", bson.D{{"status", "SUCCESS"}}}}
+	groupStage := bson.D{{"$group", bson.D{{"_id", nil}, {"totalAmount", bson.D{{"$sum", "$amount"}}}}}}
+
+	cursor, err := collection.Aggregate(context.Background(), mongo.Pipeline{matchStage, groupStage})
+	if err != nil {
+		return 0, err
+	}
+	defer cursor.Close(context.Background())
+
+	var result []bson.M
+	if err = cursor.All(context.Background(), &result); err != nil {
+		return 0, err
+	}
+	if len(result) > 0 {
+		return result[0]["totalAmount"].(float64), nil
+	}
+	return 0, nil
 }

@@ -23,10 +23,13 @@ func RegisterRoutes(templatesDir string) {
 	http.HandleFunc("/admin/home", middlewares.Authenticate(handlers.RenderAdmin(templatesDir)))
 	http.HandleFunc("/api/admin/onboard", middlewares.Authenticate(handlers.HandleOnboardUser))
 
+	http.HandleFunc("/api/admin/users", middlewares.Authenticate(handlers.ListUsers))
 	http.HandleFunc("/api/admin/edit-merchant", middlewares.Authenticate(handlers.EditMerchant))
 	http.HandleFunc("/api/admin/merchants/search", middlewares.Authenticate(handlers.SearchMerchants))
 	http.HandleFunc("/api/admin/transaction-logs", middlewares.Authenticate(handlers.GetTransactionLogs))
-	http.HandleFunc("/api/admin/users", middlewares.Authenticate(handlers.ListUsers))
+	http.HandleFunc("/api/admin/transaction-count", middlewares.Authenticate(handlers.GetSuccessTransactionCount))
+	http.HandleFunc("/api/admin/total-transaction-amount", middlewares.Authenticate(handlers.GetTotalTransactionAmount))
+
 
 	// Other public routes
 	http.HandleFunc("/form", handlers.RenderForm(templatesDir)) // Form submission
