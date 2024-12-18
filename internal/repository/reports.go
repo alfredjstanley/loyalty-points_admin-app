@@ -9,17 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Report struct
-type Report struct {
-	MerchantPhone     string  `bson:"_id" json:"phone_number"`
-	TotalSales        float64 `bson:"total_sales" json:"total_sales"`
-	TotalTransactions int     `bson:"total_transactions" json:"total_transactions"`
-	PointsEarned      float64 `bson:"points_earned" json:"points_earned"`
-	StoreName         string  `json:"store_name,omitempty"`
-	Location          string  `json:"location,omitempty"`
-}
-
-func GetMerchantReports() ([]Report, error) {
+func GetMerchantReports() ([]models.Report, error) {
 	// Aggregate reports from logs collection
 	logsCollection := client.Database("wac-points").Collection("logs")
 	pipeline := mongo.Pipeline{
@@ -40,7 +30,7 @@ func GetMerchantReports() ([]Report, error) {
 	defer cursor.Close(context.Background())
 
 	// Decode aggregated reports
-	var reports []Report
+	var reports []models.Report
 	if err := cursor.All(context.Background(), &reports); err != nil {
 		return nil, err
 	}
