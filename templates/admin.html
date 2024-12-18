@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/static/admin.css" />
+    <link rel="stylesheet" href="/static/reports.css" />
     <!-- Font Awesome CDN -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -33,6 +34,11 @@
             <li>
               <a href="#" id="transactionLogsTab">
                 <i class="fas fa-file-alt"></i> Transaction Logs
+              </a>
+            </li>
+            <li>
+              <a href="#" id="reportsTab">
+                <i class="fas fa-chart-line"></i> Reports
               </a>
             </li>
           </ul>
@@ -208,6 +214,40 @@
             <div id="logsPagination" class="pagination"></div>
           </div>
         </section>
+
+        <!-- Reports Section -->
+        <section id="reportsSection" class="section">
+          <div class="reports-section card">
+            <h3>Merchant Reports</h3>
+            <div class="report-results">
+              <div class="search-bar">
+                <input
+                  type="text"
+                  id="reportSearchInput"
+                  placeholder="Search reports"
+                />
+                <button id="reportSearchButton">
+                  <i class="fas fa-search"></i> Search
+                </button>
+              </div>
+              <table class="user-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Store Name</th>
+                    <th>Location</th>
+                    <th>Phone</th>
+
+                    <th>Total Sales</th>
+                    <th>Transactions</th>
+                    <th>Points Earned</th>
+                  </tr>
+                </thead>
+                <tbody id="reportTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
 
@@ -251,5 +291,6 @@
     </div>
 
     <script src="/static/admin.js"></script>
+    <script defer src="/static/reports.js"></script>
   </body>
 </html>

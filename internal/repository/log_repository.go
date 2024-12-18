@@ -17,7 +17,7 @@ func GetLogsWithPagination(page, limit int) ([]models.Log, int, error) {
 	skip := (page - 1) * limit
 
 	// Pagination options
-	opts := options.Find().SetSkip(int64(skip)).SetLimit(int64(limit)).SetSort(bson.D{{"created_at", -1}})
+	opts := options.Find().SetSkip(int64(skip)).SetLimit(int64(limit)).SetSort(bson.D{{Key: "created_at", Value: -1}})
 
 	// Query logs
 	cursor, err := collection.Find(context.Background(), bson.M{}, opts)

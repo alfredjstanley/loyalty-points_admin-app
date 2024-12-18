@@ -25,6 +25,7 @@ func RegisterRoutes(templatesDir string) {
 
 	http.HandleFunc("/api/admin/users", middlewares.Authenticate(handlers.ListUsers))
 	http.HandleFunc("/api/admin/edit-merchant", middlewares.Authenticate(handlers.EditMerchant))
+	http.HandleFunc("/api/admin/reports", middlewares.Authenticate(handlers.GetMerchantReportsHandler))
 	http.HandleFunc("/api/admin/merchants/search", middlewares.Authenticate(handlers.SearchMerchants))
 
 	http.HandleFunc("/api/admin/transaction-logs", middlewares.Authenticate(handlers.GetTransactionLogs))
