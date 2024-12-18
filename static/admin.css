@@ -26,7 +26,6 @@ body {
 
 .sidebar .logo-section {
   text-align: center;
-  margin-bottom: 30px;
 }
 
 .sidebar .logo {
@@ -312,7 +311,6 @@ body {
 
 /* Sidebar Stats Section */
 .sidebar-stats {
-  margin-top: 20px;
   padding: 25px;
   background: linear-gradient(135deg, #fc8118, #f47f2e);
   color: white;

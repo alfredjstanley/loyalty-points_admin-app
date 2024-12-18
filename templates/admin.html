@@ -6,6 +6,8 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/static/admin.css" />
     <link rel="stylesheet" href="/static/reports.css" />
+    <link rel="stylesheet" href="/static/counter.css" />
+
     <!-- Font Awesome CDN -->
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -29,6 +31,11 @@
             <li>
               <a href="#" id="listUsersTab">
                 <i class="fas fa-store"></i> Merchant List
+              </a>
+            </li>
+            <li>
+              <a href="#" id="counterTab">
+                <i class="fas fa-plus-circle"></i> Manage Counters
               </a>
             </li>
             <li>
@@ -175,6 +182,74 @@
           </div>
         </section>
 
+        <!-- Counter Section -->
+        <section id="counterSection" class="section">
+          <div class="card">
+            <h3>Manage Counters</h3>
+
+            <!-- Merchant Dropdown -->
+            <div class="form-group">
+              <label for="merchantDropdown">Select Merchant</label>
+              <select id="merchantDropdown">
+                <option value="">Loading merchants...</option>
+              </select>
+            </div>
+
+            <!-- Add Counter Form -->
+            <form id="addCounterForm" style="display: none">
+              <h4>Add New Counter</h4>
+              <div class="form-group">
+                <label for="counterName">Counter Name</label>
+                <input
+                  type="text"
+                  id="counterName"
+                  name="counterName"
+                  placeholder="Enter counter name"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="counterLocation">Location</label>
+                <input
+                  type="text"
+                  id="counterLocation"
+                  name="counterLocation"
+                  placeholder="Enter counter location"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="counterDescription">Description</label>
+                <textarea
+                  id="counterDescription"
+                  name="counterDescription"
+                  placeholder="Enter counter description"
+                  rows="3"
+                ></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Counter
+              </button>
+            </form>
+
+            <!-- Counter List -->
+            <div id="counterList" style="display: none">
+              <h4>Existing Counters</h4>
+              <table class="user-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Counter Name</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody id="counterTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
         <!-- Transaction Logs Section -->
         <section id="transactionLogsSection" class="section">
           <div class="card">
@@ -229,8 +304,8 @@
                     <th>Phone</th>
 
                     <th>Total Sales</th>
-                    <th>Transactions</th>
-                    <th>Points Earned</th>
+                    <th>Txn</th>
+                    <th>Points</th>
                   </tr>
                 </thead>
                 <tbody id="reportTableBody"></tbody>
@@ -282,5 +357,6 @@
 
     <script src="/static/admin.js"></script>
     <script defer src="/static/reports.js"></script>
+    <script defer src="/static/counter.js"></script>
   </body>
 </html>

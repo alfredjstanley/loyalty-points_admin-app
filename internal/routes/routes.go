@@ -40,4 +40,14 @@ func RegisterRoutes(templatesDir string) {
 
 	http.HandleFunc("/404", handlers.NotFoundHandler(templatesDir))
 
+	http.HandleFunc("/api/admin/counters", middlewares.Authenticate(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			handlers.AddCounterHandler(w, r)
+		} else if r.Method == http.MethodGet {
+			handlers.GetCountersHandler(w, r)
+		} else {
+			http.Error(w, `{"success": false, "message": "Method not allowed"}`, http.StatusMethodNotAllowed)
+		}
+	}))
+
 }

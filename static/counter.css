@@ -1,0 +1,41 @@
+#counterSection .form-group {
+  margin-bottom: 15px;
+}
+
+#counterSection .form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#counterSection .form-group input,
+#counterSection .form-group textarea,
+#counterSection .form-group select {
+  width: -webkit-fill-available;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+#counterSection table {
+  width: -webkit-fill-available;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+#counterSection table th,
+#counterSection table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+#counterSection table th {
+  background-color: #fc8118;
+  color: white;
+}
+
+#counterSection .btn {
+  margin-top: 15px;
+}
