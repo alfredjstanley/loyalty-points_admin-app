@@ -133,7 +133,7 @@
                 <label for="password">Password</label>
                 <input
                   type="password"
-                  id="password"
+                  id="admin-password"
                   name="password"
                   placeholder="Enter password"
                   required
@@ -187,12 +187,38 @@
           <div class="card">
             <h3>Manage Counters</h3>
 
-            <!-- Merchant Dropdown -->
-            <div class="form-group">
+            <!-- Select Merchant -->
+            <div id="selectMerchantSection" class="form-group">
               <label for="merchantDropdown">Select Merchant</label>
-              <select id="merchantDropdown">
-                <option value="">Loading merchants...</option>
-              </select>
+              <div class="dropdown-container">
+                <!-- Search Input -->
+                <input
+                  type="text"
+                  id="searchMerchantDropdown"
+                  placeholder="Search merchants..."
+                  oninput="filterMerchantDropdown()"
+                  class="form-control"
+                />
+                <!-- Dropdown -->
+                <select id="merchantDropdown" size="6" class="form-control">
+                  <option value="" disabled>Loading merchants...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Selected Merchant Details -->
+            <div
+              id="selectedMerchantSection"
+              class="form-group"
+              style="display: none"
+            >
+              <label>Selected Merchant</label>
+              <div id="selectedMerchantDetails" class="selected-merchant">
+                <!-- Merchant details will appear here -->
+              </div>
+              <button id="changeMerchantButton" class="btn btn-secondary">
+                Change Merchant
+              </button>
             </div>
 
             <!-- Add Counter Form -->
@@ -219,6 +245,26 @@
                 />
               </div>
               <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Enter counter username"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  id="counter-password"
+                  name="password"
+                  placeholder="Enter counter password"
+                  required
+                />
+              </div>
+              <div class="form-group">
                 <label for="counterDescription">Description</label>
                 <textarea
                   id="counterDescription"
@@ -241,6 +287,7 @@
                     <th>#</th>
                     <th>Counter Name</th>
                     <th>Location</th>
+                    <th>Username</th>
                     <th>Description</th>
                   </tr>
                 </thead>

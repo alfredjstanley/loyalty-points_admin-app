@@ -9,6 +9,8 @@ type Counter struct {
 	Name          string    `bson:"name"`           // Counter name
 	Location      string    `bson:"location"`       // Counter location
 	Description   string    `bson:"description"`    // Counter description
+	Username      string    `bson:"username"`       // Username for counter login
+	Password      string    `bson:"password"`       // Password for counter login (hashed)
 	CreatedAt     time.Time `bson:"created_at"`     // Creation timestamp
 	UpdatedAt     time.Time `bson:"updated_at"`     // Update timestamp
 }

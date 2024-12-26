@@ -153,6 +153,7 @@ func SearchMerchants(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := map[string]interface{}{
+		"success":   true,
 		"merchants": merchants,
 		"total":     len(merchants),
 	}

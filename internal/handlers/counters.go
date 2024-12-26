@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"wac-offline-payment/internal/models"
 	"wac-offline-payment/internal/repository"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // AddCounterHandler handles the addition of a new counter
@@ -20,13 +21,21 @@ func AddCounterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate input
-	if counter.MerchantPhone == "" || counter.Name == "" || counter.Location == "" {
+	if counter.MerchantPhone == "" || counter.Name == "" || counter.Location == "" || counter.Username == "" || counter.Password == "" {
 		http.Error(w, `{"success": false, "message": "Missing required fields"}`, http.StatusBadRequest)
 		return
 	}
 
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(counter.Password), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, `{"success": false, "message": "Failed to hash password"}`, http.StatusInternalServerError)
+		return
+	}
+	counter.Password = string(hashedPassword)
+
 	// Add the counter
-	err := repository.AddCounter(counter)
+	err = repository.AddCounter(counter)
 	if err != nil {
 		http.Error(w, `{"success": false, "message": "Failed to add counter"}`, http.StatusInternalServerError)
 		return
@@ -58,8 +67,6 @@ func GetCountersHandler(w http.ResponseWriter, r *http.Request) {
 		"success":  true,
 		"counters": counters,
 	}
-
-	fmt.Println("counters", counters)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)

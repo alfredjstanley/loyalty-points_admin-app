@@ -92,6 +92,7 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	// Prepare response
 	response := map[string]interface{}{
+		"success":    true,
 		"users":      users,
 		"total":      total, // Total merchants
 		"page":       page,
