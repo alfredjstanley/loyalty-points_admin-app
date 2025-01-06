@@ -51,41 +51,61 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Decode the incoming login request
 	var loginReq LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	// Fetch user from database
-	user, err := repository.FindUserByPhone(loginReq.MobileNumber)
+	// Attempt to find a user or counter
+	user, counter, err := repository.FindUserOrCounter(loginReq.MobileNumber)
 	if err != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	// Compare passwords
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginReq.Password)); err != nil {
+	var hashedPassword, phoneNumber, storeName, location string
+
+	if user != nil {
+		// User found
+		hashedPassword = user.Password
+		phoneNumber = user.PhoneNumber
+		storeName = user.StoreName
+		location = user.Location
+	} else if counter != nil {
+		// Counter found
+		hashedPassword = counter.Password
+		phoneNumber = counter.MerchantPhone
+		storeName = counter.Name
+		location = counter.Location
+	} else {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	// Generate JWT token
-	token, err := generateJWT(user.PhoneNumber)
+	// Compare the provided password with the hashed password
+	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(loginReq.Password)); err != nil {
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		return
+	}
+
+	// Generate a JWT token
+	token, err := generateJWT(phoneNumber)
 	if err != nil {
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 		return
 	}
 
-	// Send token in response
+	// Respond with the generated token and additional information
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(LoginResponse{
 		Success:     true,
 		Message:     "Login successful",
 		Token:       token,
-		StoreName:   user.StoreName,
-		Location:    user.Location,
-		PhoneNumber: user.PhoneNumber,
+		StoreName:   storeName,
+		Location:    location,
+		PhoneNumber: phoneNumber,
 	})
 }
 
