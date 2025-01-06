@@ -45,17 +45,58 @@ func SaveUser(user models.User) error {
 	return nil
 }
 
-func FindUserByPhone(phoneNumber string) (*models.User, error) {
+func findUserByPhone(phoneNumber string) (*models.User, error) {
 	collection := client.Database("olopo-points").Collection("users")
 	var user models.User
 	err := collection.FindOne(context.Background(), map[string]interface{}{
 		"phone_number": phoneNumber,
 	}).Decode(&user)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Printf("No user found for phone number: %s", phoneNumber)
+			return nil, nil
+		}
 		log.Printf("Error finding user: %v", err)
 		return nil, err
 	}
 	return &user, nil
+}
+
+func findCounterByUsername(username string) (*models.Counter, error) {
+	collection := client.Database("wac-points").Collection("counters")
+	var counter models.Counter
+	err := collection.FindOne(context.Background(), map[string]interface{}{
+		"username": username,
+	}).Decode(&counter)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Printf("No counter found for username: %s", username)
+			return nil, nil
+		}
+		log.Printf("Error finding counter: %v", err)
+		return nil, err
+	}
+	return &counter, nil
+}
+
+func FindUserOrCounter(identifier string) (*models.User, *models.Counter, error) {
+	user, err := findUserByPhone(identifier)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if user != nil {
+		// User was found
+		return user, nil, nil
+	}
+
+	// No user found, attempt to find counter
+	counter, err := findCounterByUsername(identifier)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return nil, counter, nil
 }
 
 func GetAllUsers() ([]models.User, error) {
